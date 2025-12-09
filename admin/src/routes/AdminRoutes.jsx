@@ -2,57 +2,33 @@
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
-
-// Layout
 import AdminLayout from "../components/common/AdminLayout";
 
-// Auth Pages
+// Lazy-loaded pages
 const Login = lazy(() => import("../pages/Login"));
 const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("../pages/ResetPassword"));
-
-// Dashboard
 const Dashboard = lazy(() => import("../pages/Dashboard"));
-
-// Products
 const Products = lazy(() => import("../pages/Products"));
 const AddProduct = lazy(() => import("../pages/AddProduct"));
 const EditProduct = lazy(() => import("../pages/EditProduct"));
-
-// Categories
 const Categories = lazy(() => import("../pages/Categories"));
-
-// Orders
 const Orders = lazy(() => import("../pages/Orders"));
 const OrderDetails = lazy(() => import("../pages/OrderDetails"));
-
-// Users
 const Users = lazy(() => import("../pages/Users"));
 const UserDetails = lazy(() => import("../pages/UserDetails"));
-
-// Coupons
 const Coupons = lazy(() => import("../pages/Coupons"));
-
-// Reviews
 const Reviews = lazy(() => import("../pages/Reviews"));
-
-// Reports
 const Reports = lazy(() => import("../pages/Reports"));
-
-// Settings
 const Settings = lazy(() => import("../pages/Settings"));
-
-// Profile
 const AdminProfile = lazy(() => import("../pages/AdminProfile"));
-
-// 404
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 const AdminRoutes = () => {
     return (
         <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
             <Routes>
-                {/* Public Routes */}
+                {/* Public Admin Routes */}
                 <Route path="/admin/login" element={<Login />} />
                 <Route path="/admin/forgot-password" element={<ForgotPassword />} />
                 <Route path="/admin/reset-password/:token" element={<ResetPassword />} />
@@ -61,7 +37,7 @@ const AdminRoutes = () => {
                 <Route element={<ProtectedRoute />}>
                     <Route path="/admin" element={<AdminLayout />}>
                         {/* Dashboard */}
-                        <Route index element={<Navigate to="dashboard" replace />} />
+                        <Route index element={<Navigate to="/admin/dashboard" replace />} />
                         <Route path="dashboard" element={<Dashboard />} />
 
                         {/* Products */}
@@ -140,7 +116,7 @@ const AdminRoutes = () => {
                     </Route>
                 </Route>
 
-                {/* Catch-all */}
+                {/* Catch-all redirect */}
                 <Route path="*" element={<Navigate to="/admin/404" replace />} />
             </Routes>
         </Suspense>
