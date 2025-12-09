@@ -50,16 +50,16 @@ const NotFound = lazy(() => import("../pages/NotFound"));
 
 const AdminRoutes = () => {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
             <Routes>
                 {/* Public Routes */}
-                <Route path="login" element={<Login />} />
-                <Route path="forgot-password" element={<ForgotPassword />} />
-                <Route path="reset-password/:token" element={<ResetPassword />} />
+                <Route path="/admin/login" element={<Login />} />
+                <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+                <Route path="/admin/reset-password/:token" element={<ResetPassword />} />
 
-                {/* Protected Routes */}
+                {/* Protected Admin Routes */}
                 <Route element={<ProtectedRoute />}>
-                    <Route element={<AdminLayout />}>
+                    <Route path="/admin" element={<AdminLayout />}>
                         {/* Dashboard */}
                         <Route index element={<Navigate to="dashboard" replace />} />
                         <Route path="dashboard" element={<Dashboard />} />
@@ -135,13 +135,13 @@ const AdminRoutes = () => {
                         <Route path="profile" element={<AdminProfile />} />
                         <Route path="profile/change-password" element={<AdminProfile />} />
 
-                        {/* 404 Not Found */}
+                        {/* 404 */}
                         <Route path="404" element={<NotFound />} />
                     </Route>
                 </Route>
 
                 {/* Catch-all */}
-                <Route path="*" element={<Navigate to="404" replace />} />
+                <Route path="*" element={<Navigate to="/admin/404" replace />} />
             </Routes>
         </Suspense>
     );

@@ -1,12 +1,13 @@
-import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+// src/routes/ProtectedRoute.jsx
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const ProtectedRoute = () => {
     // Get auth state from Redux
     const { isAuthenticated, loading } = useSelector((state) => state.adminAuth);
 
-    // Show loading spinner while checking authentication
+    // While checking auth, show loader
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -15,13 +16,12 @@ const ProtectedRoute = () => {
         );
     }
 
-    // Check if user is authenticated
+    // If not authenticated, redirect to login
     if (!isAuthenticated) {
-        // Redirect to login if not authenticated
         return <Navigate to="/admin/login" replace />;
     }
 
-    // Render child routes if authenticated
+    // If authenticated, render child routes
     return <Outlet />;
 };
 
