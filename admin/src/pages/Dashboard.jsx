@@ -1,6 +1,3 @@
-// ============================================
-// pages/Dashboard.jsx
-// ============================================
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -166,20 +163,20 @@ const Dashboard = () => {
     };
 
     const StatCard = ({ title, value, change, icon: Icon, color, loading }) => (
-        <div className="p-6 transition-shadow bg-white rounded-lg shadow-sm hover:shadow-md">
-            <div className="flex items-center justify-between mb-4">
+        <div className="rounded-lg bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+            <div className="mb-4 flex items-center justify-between">
                 <div className={`p-3 rounded-lg ${color}`}>
-                    <Icon className="w-6 h-6 text-white" />
+                    <Icon className="h-6 w-6 text-white" />
                 </div>
                 <button className="text-gray-400 hover:text-gray-600">
-                    <MoreVertical className="w-5 h-5" />
+                    <MoreVertical className="h-5 w-5" />
                 </button>
             </div>
 
             {loading ? (
                 <div className="animate-pulse">
-                    <div className="w-24 h-8 mb-2 bg-gray-200 rounded"></div>
-                    <div className="w-32 h-4 bg-gray-200 rounded"></div>
+                    <div className="mb-2 h-8 w-24 rounded bg-gray-200"></div>
+                    <div className="h-4 w-32 rounded bg-gray-200"></div>
                 </div>
             ) : (
                 <>
@@ -192,7 +189,7 @@ const Dashboard = () => {
                         <span className="mr-2 text-gray-600">{title}</span>
                         {change !== undefined && (
                             <span className={`flex items-center ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {change >= 0 ? <TrendingUp className="w-4 h-4 mr-1" /> : <TrendingDown className="w-4 h-4 mr-1" />}
+                                {change >= 0 ? <TrendingUp className="mr-1 h-4 w-4" /> : <TrendingDown className="mr-1 h-4 w-4" />}
                                 {Math.abs(change)}%
                             </span>
                         )}
@@ -216,14 +213,14 @@ const Dashboard = () => {
                     <select
                         value={timeRange}
                         onChange={(e) => setTimeRange(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="7days">Last 7 Days</option>
                         <option value="30days">Last 30 Days</option>
                         <option value="90days">Last 90 Days</option>
                         <option value="year">This Year</option>
                     </select>
-                    <button className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700">
+                    <button className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700">
                         Export Report
                     </button>
                 </div>
@@ -267,50 +264,50 @@ const Dashboard = () => {
 
             {/* Order Status Cards */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-                <div className="p-4 border border-yellow-200 rounded-lg bg-yellow-50">
+                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-yellow-600">Pending</p>
                             <p className="text-2xl font-bold text-yellow-800">{dashboardStats.pendingOrders}</p>
                         </div>
-                        <div className="p-2 bg-yellow-200 rounded-lg">
-                            <ShoppingCart className="w-5 h-5 text-yellow-600" />
+                        <div className="rounded-lg bg-yellow-200 p-2">
+                            <ShoppingCart className="h-5 w-5 text-yellow-600" />
                         </div>
                     </div>
                 </div>
 
-                <div className="p-4 border border-blue-200 rounded-lg bg-blue-50">
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-blue-600">Processing</p>
                             <p className="text-2xl font-bold text-blue-800">{dashboardStats.processingOrders}</p>
                         </div>
-                        <div className="p-2 bg-blue-200 rounded-lg">
-                            <Package className="w-5 h-5 text-blue-600" />
+                        <div className="rounded-lg bg-blue-200 p-2">
+                            <Package className="h-5 w-5 text-blue-600" />
                         </div>
                     </div>
                 </div>
 
-                <div className="p-4 border border-purple-200 rounded-lg bg-purple-50">
+                <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-purple-600">Shipped</p>
                             <p className="text-2xl font-bold text-purple-800">{dashboardStats.shippedOrders}</p>
                         </div>
-                        <div className="p-2 bg-purple-200 rounded-lg">
-                            <TrendingUp className="w-5 h-5 text-purple-600" />
+                        <div className="rounded-lg bg-purple-200 p-2">
+                            <TrendingUp className="h-5 w-5 text-purple-600" />
                         </div>
                     </div>
                 </div>
 
-                <div className="p-4 border border-green-200 rounded-lg bg-green-50">
+                <div className="rounded-lg border border-green-200 bg-green-50 p-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-green-600">Delivered</p>
                             <p className="text-2xl font-bold text-green-800">{dashboardStats.deliveredOrders}</p>
                         </div>
-                        <div className="p-2 bg-green-200 rounded-lg">
-                            <Users className="w-5 h-5 text-green-600" />
+                        <div className="rounded-lg bg-green-200 p-2">
+                            <Users className="h-5 w-5 text-green-600" />
                         </div>
                     </div>
                 </div>
@@ -319,8 +316,8 @@ const Dashboard = () => {
             {/* Charts Row */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 {/* Sales Chart */}
-                <div className="p-6 bg-white rounded-lg shadow-sm">
-                    <div className="flex items-center justify-between mb-6">
+                <div className="rounded-lg bg-white p-6 shadow-sm">
+                    <div className="mb-6 flex items-center justify-between">
                         <h2 className="text-lg font-semibold text-gray-900">Sales Overview</h2>
                         <button className="text-sm font-medium text-blue-600 hover:text-blue-700">
                             View Details
@@ -330,8 +327,8 @@ const Dashboard = () => {
                 </div>
 
                 {/* Revenue Chart */}
-                <div className="p-6 bg-white rounded-lg shadow-sm">
-                    <div className="flex items-center justify-between mb-6">
+                <div className="rounded-lg bg-white p-6 shadow-sm">
+                    <div className="mb-6 flex items-center justify-between">
                         <h2 className="text-lg font-semibold text-gray-900">Revenue Breakdown</h2>
                         <button className="text-sm font-medium text-blue-600 hover:text-blue-700">
                             View Details
@@ -344,23 +341,23 @@ const Dashboard = () => {
             {/* Top Products and Recent Orders */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 {/* Top Products */}
-                <div className="p-6 bg-white rounded-lg shadow-sm">
-                    <div className="flex items-center justify-between mb-6">
+                <div className="rounded-lg bg-white p-6 shadow-sm">
+                    <div className="mb-6 flex items-center justify-between">
                         <h2 className="text-lg font-semibold text-gray-900">Top Products</h2>
                         <button
                             onClick={() => navigate('/admin/products')}
                             className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-700"
                         >
-                            View All <ArrowUpRight className="w-4 h-4 ml-1" />
+                            View All <ArrowUpRight className="ml-1 h-4 w-4" />
                         </button>
                     </div>
 
                     <div className="space-y-4">
                         {topProducts.map((product) => (
-                            <div key={product.id} className="flex items-center justify-between p-3 transition-colors rounded-lg hover:bg-gray-50">
+                            <div key={product.id} className="flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-gray-50">
                                 <div className="flex items-center space-x-3">
-                                    <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-lg">
-                                        <Package className="w-6 h-6 text-gray-500" />
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-200">
+                                        <Package className="h-6 w-6 text-gray-500" />
                                     </div>
                                     <div>
                                         <p className="font-medium text-gray-900">{product.name}</p>
@@ -371,7 +368,7 @@ const Dashboard = () => {
                                     <p className="font-semibold text-gray-900">{product.sales} sales</p>
                                     <div className="flex items-center justify-end">
                                         <span className={`text-xs flex items-center ${product.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                                            {product.trend === 'up' ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
+                                            {product.trend === 'up' ? <TrendingUp className="mr-1 h-3 w-3" /> : <TrendingDown className="mr-1 h-3 w-3" />}
                                             {Math.abs(product.trendValue)}%
                                         </span>
                                     </div>
@@ -382,14 +379,14 @@ const Dashboard = () => {
                 </div>
 
                 {/* Recent Orders */}
-                <div className="p-6 bg-white rounded-lg shadow-sm">
-                    <div className="flex items-center justify-between mb-6">
+                <div className="rounded-lg bg-white p-6 shadow-sm">
+                    <div className="mb-6 flex items-center justify-between">
                         <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
                         <button
                             onClick={() => navigate('/admin/orders')}
                             className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-700"
                         >
-                            View All <ArrowUpRight className="w-4 h-4 ml-1" />
+                            View All <ArrowUpRight className="ml-1 h-4 w-4" />
                         </button>
                     </div>
 
@@ -397,11 +394,11 @@ const Dashboard = () => {
                         {recentOrders.map((order) => (
                             <div
                                 key={order.id}
-                                className="flex items-center justify-between p-3 transition-colors rounded-lg cursor-pointer hover:bg-gray-50"
+                                className="flex cursor-pointer items-center justify-between rounded-lg p-3 transition-colors hover:bg-gray-50"
                                 onClick={() => navigate(`/admin/orders/${order.id.replace('#', '')}`)}
                             >
                                 <div className="flex-1">
-                                    <div className="flex items-center mb-1 space-x-2">
+                                    <div className="mb-1 flex items-center space-x-2">
                                         <p className="font-medium text-gray-900">{order.id}</p>
                                         <span className={`px-2 py-1 text-xs rounded-full border ${getStatusColor(order.status)}`}>
                                             {order.status}
@@ -413,7 +410,7 @@ const Dashboard = () => {
                                 <div className="text-right">
                                     <p className="font-semibold text-gray-900">৳{order.amount.toLocaleString()}</p>
                                     <button className="mt-1 text-sm text-blue-600 hover:text-blue-700">
-                                        <Eye className="w-4 h-4" />
+                                        <Eye className="h-4 w-4" />
                                     </button>
                                 </div>
                             </div>
@@ -423,38 +420,38 @@ const Dashboard = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="p-6 bg-white rounded-lg shadow-sm">
+            <div className="rounded-lg bg-white p-6 shadow-sm">
                 <h2 className="mb-4 text-lg font-semibold text-gray-900">Quick Actions</h2>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     <button
                         onClick={() => navigate('/admin/products/add')}
-                        className="p-4 text-center transition-all border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 hover:bg-blue-50 group"
+                        className="group rounded-lg border-2 border-dashed border-gray-300 p-4 text-center transition-all hover:border-blue-500 hover:bg-blue-50"
                     >
-                        <Package className="w-8 h-8 mx-auto mb-2 text-gray-400 group-hover:text-blue-600" />
+                        <Package className="mx-auto mb-2 h-8 w-8 text-gray-400 group-hover:text-blue-600" />
                         <p className="text-sm font-medium text-gray-700 group-hover:text-blue-600">Add Product</p>
                     </button>
 
                     <button
                         onClick={() => navigate('/admin/orders')}
-                        className="p-4 text-center transition-all border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 hover:bg-blue-50 group"
+                        className="group rounded-lg border-2 border-dashed border-gray-300 p-4 text-center transition-all hover:border-blue-500 hover:bg-blue-50"
                     >
-                        <ShoppingCart className="w-8 h-8 mx-auto mb-2 text-gray-400 group-hover:text-blue-600" />
+                        <ShoppingCart className="mx-auto mb-2 h-8 w-8 text-gray-400 group-hover:text-blue-600" />
                         <p className="text-sm font-medium text-gray-700 group-hover:text-blue-600">Manage Orders</p>
                     </button>
 
                     <button
                         onClick={() => navigate('/admin/users')}
-                        className="p-4 text-center transition-all border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 hover:bg-blue-50 group"
+                        className="group rounded-lg border-2 border-dashed border-gray-300 p-4 text-center transition-all hover:border-blue-500 hover:bg-blue-50"
                     >
-                        <Users className="w-8 h-8 mx-auto mb-2 text-gray-400 group-hover:text-blue-600" />
+                        <Users className="mx-auto mb-2 h-8 w-8 text-gray-400 group-hover:text-blue-600" />
                         <p className="text-sm font-medium text-gray-700 group-hover:text-blue-600">View Customers</p>
                     </button>
 
                     <button
                         onClick={() => navigate('/admin/reports')}
-                        className="p-4 text-center transition-all border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 hover:bg-blue-50 group"
+                        className="group rounded-lg border-2 border-dashed border-gray-300 p-4 text-center transition-all hover:border-blue-500 hover:bg-blue-50"
                     >
-                        <TrendingUp className="w-8 h-8 mx-auto mb-2 text-gray-400 group-hover:text-blue-600" />
+                        <TrendingUp className="mx-auto mb-2 h-8 w-8 text-gray-400 group-hover:text-blue-600" />
                         <p className="text-sm font-medium text-gray-700 group-hover:text-blue-600">View Reports</p>
                     </button>
                 </div>
