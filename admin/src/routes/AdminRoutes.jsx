@@ -1,125 +1,127 @@
-// src/routes/AdminRoutes.jsx
-import React, { Suspense, lazy } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import ProtectedRoute from "./ProtectedRoute";
-import AdminLayout from "../components/common/AdminLayout";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import AdminLayout from '../components/common/AdminLayout';
+import AuthLayout from '../components/common/AuthLayout';
+// Auth Pages
+import Login from '../pages/auth/Login';
+import Register from '../pages/auth/Register';
+import ForgotPassword from '../pages/auth/ForgotPassword';
+import ResetPassword from '../pages/auth/ResetPassword';
 
-// Lazy-loaded pages
-const Login = lazy(() => import("../pages/Login"));
-const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
-const ResetPassword = lazy(() => import("../pages/ResetPassword"));
-const Dashboard = lazy(() => import("../pages/Dashboard"));
-const Products = lazy(() => import("../pages/Products"));
-const AddProduct = lazy(() => import("../pages/AddProduct"));
-const EditProduct = lazy(() => import("../pages/EditProduct"));
-const Categories = lazy(() => import("../pages/Categories"));
-const Orders = lazy(() => import("../pages/Orders"));
-const OrderDetails = lazy(() => import("../pages/OrderDetails"));
-const Users = lazy(() => import("../pages/Users"));
-const UserDetails = lazy(() => import("../pages/UserDetails"));
-const Coupons = lazy(() => import("../pages/Coupons"));
-const Reviews = lazy(() => import("../pages/Reviews"));
-const Reports = lazy(() => import("../pages/Reports"));
-const Settings = lazy(() => import("../pages/Settings"));
-const AdminProfile = lazy(() => import("../pages/AdminProfile"));
-const NotFound = lazy(() => import("../pages/NotFound"));
+// Dashboard
+import Dashboard from '../pages/Dashboard';
+
+// Products
+import Products from '../pages/products/Products';
+import AddProduct from '../pages/products/AddProduct';
+import EditProduct from '../pages/products/EditProduct';
+import ProductDetails from '../pages/products/ProductDetails';
+
+// Categories
+import Categories from '../pages/categories/Categories';
+import SubCategories from '../pages/categories/SubCategories';
+
+// Inventory
+import Inventory from '../pages/inventory/Inventory';
+
+// Orders
+import Orders from '../pages/orders/Orders';
+import OrderDetails from '../pages/orders/OrderDetails';
+
+// Customers
+import Customers from '../pages/customers/Customers';
+import CustomerDetails from '../pages/customers/CustomerDetails';
+
+// Users & Roles
+import Users from '../pages/users/Users';
+import Roles from '../pages/users/Roles';
+
+// Marketing
+import Coupons from '../pages/marketing/Coupons';
+import FlashSales from '../pages/marketing/FlashSales';
+import Banners from '../pages/marketing/Banners';
+import Campaigns from '../pages/marketing/Campaigns';
+
+// Other Pages
+import Reviews from '../pages/Reviews';
+import Reports from '../pages/Reports';
+import Settings from '../pages/Settings';
+import AdminProfile from '../pages/AdminProfile';
+import Notifications from '../pages/Notifications';
+import ActivityLogs from '../pages/ActivityLogs';
+import NotFound from '../pages/NotFound';
+import Unauthorized from '../pages/Unauthorized';
 
 const AdminRoutes = () => {
     return (
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
-            <Routes>
-                {/* Public Admin Routes */}
-                <Route path="/admin/login" element={<Login />} />
-                <Route path="/admin/forgot-password" element={<ForgotPassword />} />
-                <Route path="/admin/reset-password/:token" element={<ResetPassword />} />
+        <Routes>
+            {/* Auth Routes - Public */}
+            <Route element={<AuthLayout />}>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+            </Route>
 
-                {/* Protected Admin Routes */}
-                <Route element={<ProtectedRoute />}>
-                    <Route path="/admin" element={<AdminLayout />}>
-                        {/* Dashboard */}
-                        <Route index element={<Navigate to="/admin/dashboard" replace />} />
-                        <Route path="dashboard" element={<Dashboard />} />
+            {/* Admin Routes - Protected */}
+            <Route element={<PrivateRoute><AdminLayout /></PrivateRoute>}>
+                {/* Dashboard */}
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={<Dashboard />} />
 
-                        {/* Products */}
-                        <Route path="products">
-                            <Route index element={<Products />} />
-                            <Route path="add" element={<AddProduct />} />
-                            <Route path="edit/:id" element={<EditProduct />} />
-                            <Route path="bulk-upload" element={<AddProduct />} />
-                            <Route path=":id/variants" element={<EditProduct />} />
-                        </Route>
+                {/* Products Management */}
+                <Route path="/products" element={<Products />} />
+                <Route path="/products/add" element={<AddProduct />} />
+                <Route path="/products/edit/:id" element={<EditProduct />} />
+                <Route path="/products/:id" element={<ProductDetails />} />
 
-                        {/* Categories */}
-                        <Route path="categories">
-                            <Route index element={<Categories />} />
-                            <Route path="add" element={<Categories />} />
-                            <Route path="edit/:id" element={<Categories />} />
-                        </Route>
+                {/* Categories Management */}
+                <Route path="/categories" element={<Categories />} />
+                <Route path="/categories/sub-categories" element={<SubCategories />} />
 
-                        {/* Orders */}
-                        <Route path="orders">
-                            <Route index element={<Orders />} />
-                            <Route path=":id" element={<OrderDetails />} />
-                            <Route path=":id/invoice" element={<OrderDetails />} />
-                            <Route path=":id/update-status" element={<OrderDetails />} />
-                        </Route>
+                {/* Inventory Management */}
+                <Route path="/inventory" element={<Inventory />} />
 
-                        {/* Users */}
-                        <Route path="users">
-                            <Route index element={<Users />} />
-                            <Route path="add" element={<Users />} />
-                            <Route path=":id" element={<UserDetails />} />
-                            <Route path="edit/:id" element={<Users />} />
-                            <Route path=":id/activity" element={<UserDetails />} />
-                        </Route>
+                {/* Orders Management */}
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/orders/:id" element={<OrderDetails />} />
 
-                        {/* Coupons */}
-                        <Route path="coupons">
-                            <Route index element={<Coupons />} />
-                            <Route path="add" element={<Coupons />} />
-                            <Route path="edit/:id" element={<Coupons />} />
-                        </Route>
+                {/* Customers Management */}
+                <Route path="/customers" element={<Customers />} />
+                <Route path="/customers/:id" element={<CustomerDetails />} />
 
-                        {/* Reviews */}
-                        <Route path="reviews">
-                            <Route index element={<Reviews />} />
-                            <Route path="pending" element={<Reviews />} />
-                            <Route path=":id" element={<Reviews />} />
-                        </Route>
+                {/* Users & Roles Management */}
+                <Route path="/users" element={<Users />} />
+                <Route path="/users/roles" element={<Roles />} />
 
-                        {/* Reports */}
-                        <Route path="reports">
-                            <Route index element={<Reports />} />
-                            <Route path="sales" element={<Reports />} />
-                            <Route path="inventory" element={<Reports />} />
-                            <Route path="customers" element={<Reports />} />
-                            <Route path="revenue" element={<Reports />} />
-                        </Route>
+                {/* Marketing */}
+                <Route path="/marketing/coupons" element={<Coupons />} />
+                <Route path="/marketing/flash-sales" element={<FlashSales />} />
+                <Route path="/marketing/banners" element={<Banners />} />
+                <Route path="/marketing/campaigns" element={<Campaigns />} />
 
-                        {/* Settings */}
-                        <Route path="settings">
-                            <Route index element={<Settings />} />
-                            <Route path="general" element={<Settings />} />
-                            <Route path="payment" element={<Settings />} />
-                            <Route path="shipping" element={<Settings />} />
-                            <Route path="email" element={<Settings />} />
-                            <Route path="seo" element={<Settings />} />
-                            <Route path="tax" element={<Settings />} />
-                        </Route>
+                {/* Reviews */}
+                <Route path="/reviews" element={<Reviews />} />
 
-                        {/* Profile */}
-                        <Route path="profile" element={<AdminProfile />} />
-                        <Route path="profile/change-password" element={<AdminProfile />} />
+                {/* Reports */}
+                <Route path="/reports" element={<Reports />} />
 
-                        {/* 404 */}
-                        <Route path="404" element={<NotFound />} />
-                    </Route>
-                </Route>
+                {/* Settings */}
+                <Route path="/settings" element={<Settings />} />
 
-                {/* Catch-all redirect */}
-                <Route path="*" element={<Navigate to="/admin/404" replace />} />
-            </Routes>
-        </Suspense>
+                {/* Profile */}
+                <Route path="/profile" element={<AdminProfile />} />
+
+                {/* Notifications */}
+                <Route path="/notifications" element={<Notifications />} />
+
+                {/* Activity Logs */}
+                <Route path="/activity-logs" element={<ActivityLogs />} />
+            </Route>
+
+            {/* Error Pages */}
+            <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="*" element={<NotFound />} />
+        </Routes>
     );
 };
 

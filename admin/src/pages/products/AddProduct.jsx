@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { assets } from '../assets/assets';
 import axios from 'axios';
-import { backendUrl } from '../App'
+import { backendUrl, currency } from "../../config";
 import { toast } from 'react-toastify';
 
 const Add = ({ token }) => {
@@ -57,7 +57,7 @@ const Add = ({ token }) => {
     }
   }
   return (
-    <form onSubmit={onSubmitHandler} className='flex flex-col items-start w-full gap-3' action="">
+    <form onSubmit={onSubmitHandler} className='flex w-full flex-col items-start gap-3' action="">
       <div className='grid grid-flow-row-dense grid-cols-2 grid-rows-2 gap-8'>
         <label htmlFor="image1" className='col-span-1'>
           <img className='w-20' src={!image1 ? assets.upload_area : URL.createObjectURL(image1)} alt="" />
@@ -79,13 +79,13 @@ const Add = ({ token }) => {
 
       <div className='w-full'>
         <p className='mb-2'>Product name</p>
-        <input onChange={(e) => setName(e.target.value)} value={name} className='w-full max-w-[500px] px-3 py-2 ' type="text" placeholder='Type here' required />
+        <input onChange={(e) => setName(e.target.value)} value={name} className='w-full max-w-[500px] px-3 py-2' type="text" placeholder='Type here' required />
       </div>
       <div className='w-full'>
         <p className='mb-2'>Product description</p>
-        <textarea onChange={(e) => setDescription(e.target.value)} value={description} className='w-full max-w-[500px] px-3 py-2 ' type="text" placeholder='Write description here' required />
+        <textarea onChange={(e) => setDescription(e.target.value)} value={description} className='w-full max-w-[500px] px-3 py-2' type="text" placeholder='Write description here' required />
       </div>
-      <div className='flex flex-col w-full gap-2 sm:flex-row sm:gap-8'>
+      <div className='flex w-full flex-col gap-2 sm:flex-row sm:gap-8'>
 
         <div>
           <p className='mb-2'>Product category</p>
@@ -133,11 +133,11 @@ const Add = ({ token }) => {
           </div>
         </div>
       </div>
-      <div className='flex gap-2 mt-2'>
+      <div className='mt-2 flex gap-2'>
         <input onChange={() => setBestseller(prev => !prev)} checked={bestseller} type="checkbox" id='bestseller' />
         <label className='cursor-pointer' htmlFor="bestseller">Add to bestseller</label>
       </div>
-      <button className='py-3 mt-4 text-white bg-black w-28'>ADD</button>
+      <button className='mt-4 w-28 bg-black py-3 text-white'>ADD</button>
     </form>
   )
 }

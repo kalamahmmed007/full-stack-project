@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { loginStart, loginSuccess, loginFailure } from '../redux/slices/adminAuthSlice';
+import { loginStart, loginSuccess, loginFailure } from '../../redux/slices/adminAuthSlice';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -35,16 +35,16 @@ const Login = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <form onSubmit={handleSubmit} className="w-full max-w-md p-8 bg-white rounded shadow-md">
-                <h2 className="mb-6 text-2xl font-bold text-center">Admin Login</h2>
+        <div className="flex min-h-screen items-center justify-center bg-gray-100">
+            <form onSubmit={handleSubmit} className="w-full max-w-md rounded bg-white p-8 shadow-md">
+                <h2 className="mb-6 text-center text-2xl font-bold">Admin Login</h2>
                 {error && <p className="mb-2 text-red-500">{error}</p>}
                 <input
                     type="email"
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-2 mb-4 border rounded"
+                    className="mb-4 w-full rounded border p-2"
                     required
                 />
                 <input
@@ -52,12 +52,12 @@ const Login = () => {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full p-2 mb-4 border rounded"
+                    className="mb-4 w-full rounded border p-2"
                     required
                 />
                 <button
                     type="submit"
-                    className="w-full py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+                    className="w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700"
                     disabled={loading}
                 >
                     {loading ? 'Logging in...' : 'Login'}

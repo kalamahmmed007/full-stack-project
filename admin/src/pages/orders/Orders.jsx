@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { backendUrl, currency } from '../App';
+import { backendUrl, currency } from "../../config";
 import { toast } from 'react-toastify';
 import { assets } from '../assets/assets';
 
@@ -55,7 +55,7 @@ const Orders = ({ token }) => {
         {orders.map((order, index) => (
           <div
             key={index}
-            className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start border-2 border-gray-300 p-5 md:p-8 my-3 md:my-4 text-xs sm:text-sm text-gray-700"
+            className="my-3 grid grid-cols-1 items-start gap-3 border-2 border-gray-300 p-5 text-xs text-gray-700 sm:grid-cols-[0.5fr_2fr_1fr] sm:text-sm md:my-4 md:p-8 lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr]"
           >
             <img className="w-12" src={assets.parcel_icon} alt="Parcel Icon" />
             <div>
@@ -71,7 +71,7 @@ const Orders = ({ token }) => {
                   </p>
                 ))}
               </div>
-              <p className="mt-3 mb-2 font-medium">
+              <p className="mb-2 mt-3 font-medium">
                 {order.address.firstName + ' ' + order.address.lastName}
               </p>
               <div>
