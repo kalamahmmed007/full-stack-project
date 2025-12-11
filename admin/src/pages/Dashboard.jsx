@@ -1,9 +1,7 @@
-// src/pages/Dashboard.jsx
+// Dashboard.jsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    ShoppingCart, Users, Package, DollarSign, Activity, AlertTriangle, Calendar
-} from 'lucide-react';
+import { Calendar, DollarSign, ShoppingCart, Users, Package, AlertTriangle } from 'lucide-react';
 
 // Components
 import StatCard from '../components/common/StatCard';
@@ -23,11 +21,12 @@ import { fetchDashboardStats } from '../redux/slices/DashboardSlice';
 const Dashboard = () => {
     const dispatch = useDispatch();
 
-    // ✅ Correct slice key and default stats object
-    const { stats = {}, loading, error } = useSelector((state) => state.dashboard);
-    const { user } = useSelector((state) => state.auth);
+    // ✅ default the slice itself
+    const dashboardSlice = useSelector((state) => state.dashboard || {});
+    const { stats = {}, loading = false, error = null } = dashboardSlice;
+    const { user } = useSelector((state) => state.auth || {});
 
-    const [dateRange, setDateRange] = useState('week'); // today, week, month, year
+    const [dateRange, setDateRange] = useState('week');
 
     useEffect(() => {
         dispatch(fetchDashboardStats(dateRange));

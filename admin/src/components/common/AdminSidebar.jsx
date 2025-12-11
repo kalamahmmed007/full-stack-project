@@ -1,208 +1,387 @@
-import { NavLink } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard,
     Package,
-    Warehouse,
+    Archive,
     ShoppingCart,
     Users,
+    UserCog,
     Megaphone,
-    CreditCard,
+    Star,
     Truck,
+    CreditCard,
     FileText,
     BarChart3,
-    UserCog,
     Settings,
     Bell,
-    Palette,
-    Server,
-    HelpCircle,
+    Activity,
     ChevronDown,
     ChevronRight,
-    Tag,
-    Grid,
-    Star,
-    PlusSquare,
-    Upload,
-    AlertCircle,
-    History,
-    Clock,
-    CheckCircle,
-    XCircle,
-    RotateCcw,
-    Mail,
-    MessageSquare,
-    Zap,
-    Image,
-    Database,
-    FileBarChart,
-    Shield,
-    Activity,
-    Layers,
-    Chrome,
-    HardDrive,
-    AlertTriangle,
-    Wrench,
-    BookOpen,
-    Phone,
-    Info
-} from "lucide-react";
-import { useState } from "react";
+    X
+} from 'lucide-react';
 
-// Fake counts - replace with Redux or API later
-const counts = {
-    orders: { pending: 5, total: 120 },
-    products: { total: 80 },
-    notifications: 3,
-    tickets: 7
-};
+const AdminSidebar = ({ isOpen, onClose }) => {
+    const location = useLocation();
+    const [openMenus, setOpenMenus] = useState({});
 
-const linkBase = "flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200";
-const activeLink = "bg-blue-50 text-blue-600 shadow-sm";
-const inactiveLink = "text-gray-600 hover:bg-gray-50 hover:text-gray-900";
+    // Icon mapping
+    const iconMap = {
+        LayoutDashboard,
+        Package,
+        Archive,
+        ShoppingCart,
+        Users,
+        UserCog,
+        Megaphone,
+        Star,
+        Truck,
+        CreditCard,
+        FileText,
+        BarChart3,
+        Settings,
+        Bell,
+        Activity
+    };
 
-const submenuLinkBase = "flex items-center gap-3 px-3 py-2 pl-11 rounded-lg text-sm transition-all duration-200";
-const activeSubmenuLink = "bg-blue-50 text-blue-600 font-medium";
-const inactiveSubmenuLink = "text-gray-500 hover:bg-gray-50 hover:text-gray-900";
+    // Menu items configuration
+    const menuItems = [
+        {
+            id: 1,
+            title: "Dashboard",
+            icon: "LayoutDashboard",
+            path: "/dashboard",
+            badge: null
+        },
+        {
+            id: 2,
+            title: "Products",
+            icon: "Package",
+            path: "/admin/products",
+            badge: null,
+            submenu: [
+                { title: "All Products", path: "/products" },
+                { title: "Add Product", path: "/products/add" },
+                { title: "Categories", path: "/categories" },
+                { title: "Brands", path: "/brands" },
+                { title: "Attributes", path: "/attributes" },
+                { title: "Bulk Upload", path: "/products/bulk-upload" }
+            ]
+        },
+        {
+            id: 3,
+            title: "Inventory",
+            icon: "Archive",
+            path: "/inventory",
+            badge: "12",
+            submenu: [
+                { title: "Stock List", path: "/inventory" },
+                { title: "Low Stock", path: "/inventory/low-stock" },
+                { title: "Stock Update", path: "/inventory/update" },
+                { title: "Stock History", path: "/inventory/history" }
+            ]
+        },
+        {
+            id: 4,
+            title: "Orders",
+            icon: "ShoppingCart",
+            path: "/orders",
+            badge: "5",
+            submenu: [
+                { title: "All Orders", path: "/orders" },
+                { title: "Pending", path: "/orders?status=pending" },
+                { title: "Processing", path: "/orders?status=processing" },
+                { title: "Shipped", path: "/orders?status=shipped" },
+                { title: "Delivered", path: "/orders?status=delivered" },
+                { title: "Cancelled", path: "/orders?status=cancelled" }
+            ]
+        },
+        {
+            id: 5,
+            title: "Customers",
+            icon: "Users",
+            path: "/customers",
+            submenu: [
+                { title: "All Customers", path: "/customers" },
+                { title: "Customer Groups", path: "/customers/groups" },
+                { title: "Customer Activity", path: "/customers/activity" }
+            ]
+        },
+        {
+            id: 6,
+            title: "Users & Roles",
+            icon: "UserCog",
+            path: "/users",
+            submenu: [
+                { title: "All Users", path: "/users" },
+                { title: "Add User", path: "/users/add" },
+                { title: "Roles", path: "/users/roles" },
+                { title: "Permissions", path: "/users/permissions" }
+            ]
+        },
+        {
+            id: 7,
+            title: "Marketing",
+            icon: "Megaphone",
+            path: "/marketing",
+            submenu: [
+                { title: "Coupons", path: "/marketing/coupons" },
+                { title: "Flash Sales", path: "/marketing/flash-sales" },
+                { title: "Banners", path: "/marketing/banners" },
+                { title: "Email Campaigns", path: "/marketing/email-campaigns" },
+                { title: "SMS Campaigns", path: "/marketing/sms-campaigns" },
+                { title: "Push Notifications", path: "/marketing/push-notifications" },
+                { title: "Newsletter", path: "/marketing/newsletter" }
+            ]
+        },
+        {
+            id: 8,
+            title: "Reviews",
+            icon: "Star",
+            path: "/reviews",
+            badge: "3",
+            submenu: [
+                { title: "All Reviews", path: "/reviews" },
+                { title: "Pending", path: "/reviews?status=pending" },
+                { title: "Approved", path: "/reviews?status=approved" },
+                { title: "Review Stats", path: "/reviews/stats" }
+            ]
+        },
+        {
+            id: 9,
+            title: "Shipping",
+            icon: "Truck",
+            path: "/shipping",
+            submenu: [
+                { title: "Shipping Methods", path: "/shipping/methods" },
+                { title: "Shipping Zones", path: "/shipping/zones" },
+                { title: "Delivery Partners", path: "/shipping/partners" }
+            ]
+        },
+        {
+            id: 10,
+            title: "Payments",
+            icon: "CreditCard",
+            path: "/payments",
+            submenu: [
+                { title: "Transactions", path: "/payments/transactions" },
+                { title: "Payment Gateways", path: "/payments/gateways" },
+                { title: "Payouts", path: "/payments/payouts" }
+            ]
+        },
+        {
+            id: 11,
+            title: "CMS",
+            icon: "FileText",
+            path: "/cms",
+            submenu: [
+                { title: "Pages", path: "/cms/pages" },
+                { title: "Blog Posts", path: "/cms/blogs" },
+                { title: "FAQs", path: "/cms/faqs" },
+                { title: "Media Library", path: "/cms/media" }
+            ]
+        },
+        {
+            id: 12,
+            title: "Reports",
+            icon: "BarChart3",
+            path: "/reports",
+            submenu: [
+                { title: "Sales Report", path: "/reports/sales" },
+                { title: "Revenue Report", path: "/reports/revenue" },
+                { title: "Inventory Report", path: "/reports/inventory" },
+                { title: "Customer Report", path: "/reports/customers" },
+                { title: "Product Report", path: "/reports/products" },
+                { title: "Tax Report", path: "/reports/tax" },
+                { title: "Export Report", path: "/reports/export" }
+            ]
+        },
+        {
+            id: 13,
+            title: "Settings",
+            icon: "Settings",
+            path: "/settings",
+            submenu: [
+                { title: "General", path: "/settings/general" },
+                { title: "Store", path: "/settings/store" },
+                { title: "Payment", path: "/settings/payment" },
+                { title: "Shipping", path: "/settings/shipping" },
+                { title: "Email", path: "/settings/email" },
+                { title: "SMS", path: "/settings/sms" },
+                { title: "SEO", path: "/settings/seo" },
+                { title: "Tax", path: "/settings/tax" },
+                { title: "Currency", path: "/settings/currency" },
+                { title: "Language", path: "/settings/language" },
+                { title: "Theme", path: "/settings/theme" },
+                { title: "API", path: "/settings/api" },
+                { title: "Backup", path: "/settings/backup" }
+            ]
+        },
+        {
+            id: 14,
+            title: "Notifications",
+            icon: "Bell",
+            path: "/notifications",
+            badge: "8"
+        },
+        {
+            id: 15,
+            title: "Activity Logs",
+            icon: "Activity",
+            path: "/activity-logs"
+        }
+    ];
 
-const AdminSidebar = () => {
-    const [openMenus, setOpenMenus] = useState({
-        products: false,
-        inventory: false,
-        orders: false,
-        customers: false,
-        marketing: false,
-        payments: false,
-        shipping: false,
-        cms: false,
-        reports: false,
-        users: false,
-        settings: false,
-        appearance: false,
-        system: false,
-        support: false
-    });
+    // Toggle submenu
+    const toggleMenu = (menuId) => {
+        setOpenMenus(prev => ({
+            ...prev,
+            [menuId]: !prev[menuId]
+        }));
+    };
 
-    const toggleMenu = (menu) => {
-        setOpenMenus(prev => ({ ...prev, [menu]: !prev[menu] }));
+    // Check if path is active
+    const isActive = (path) => {
+        return location.pathname === path || location.pathname.startsWith(path + '/');
+    };
+
+    // Check if submenu has active item
+    const hasActiveSubmenu = (submenu) => {
+        return submenu?.some(item => isActive(item.path));
+    };
+
+    // Render menu item
+    const renderMenuItem = (item) => {
+        const Icon = iconMap[item.icon];
+        const hasSubmenu = item.submenu && item.submenu.length > 0;
+        const isMenuOpen = openMenus[item.id] || hasActiveSubmenu(item.submenu);
+        const itemActive = isActive(item.path);
+
+        return (
+            <li key={item.id} className="mb-1">
+                {hasSubmenu ? (
+                    <>
+                        <button
+                            onClick={() => toggleMenu(item.id)}
+                            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 ${itemActive || hasActiveSubmenu(item.submenu)
+                                ? 'bg-blue-50 text-blue-600'
+                                : 'text-gray-700 hover:bg-gray-100'
+                                }`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <Icon size={20} />
+                                <span className="font-medium">{item.title}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {item.badge && (
+                                    <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-semibold text-white">
+                                        {item.badge}
+                                    </span>
+                                )}
+                                {isMenuOpen ? (
+                                    <ChevronDown size={18} />
+                                ) : (
+                                    <ChevronRight size={18} />
+                                )}
+                            </div>
+                        </button>
+
+                        {/* Submenu */}
+                        {isMenuOpen && (
+                            <ul className="ml-4 mt-1 border-l-2 border-gray-200 pl-4">
+                                {item.submenu.map((subItem, index) => (
+                                    <li key={index}>
+                                        <Link
+                                            to={subItem.path}
+                                            onClick={onClose}
+                                            className={`block px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${isActive(subItem.path)
+                                                ? 'bg-blue-50 text-blue-600 font-medium'
+                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                }`}
+                                        >
+                                            {subItem.title}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </>
+                ) : (
+                    <Link
+                        to={item.path}
+                        onClick={onClose}
+                        className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 ${itemActive
+                            ? 'bg-blue-50 text-blue-600'
+                            : 'text-gray-700 hover:bg-gray-100'
+                            }`}
+                    >
+                        <div className="flex items-center gap-3">
+                            <Icon size={20} />
+                            <span className="font-medium">{item.title}</span>
+                        </div>
+                        {item.badge && (
+                            <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-semibold text-white">
+                                {item.badge}
+                            </span>
+                        )}
+                    </Link>
+                )}
+            </li>
+        );
     };
 
     return (
-        <aside className="h-screen w-64 overflow-y-auto border-r border-gray-200 bg-white">
-            {/* Logo Section */}
-            <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-4 py-4">
-                <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
-                        <Package className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                        <h1 className="text-lg font-bold text-gray-900">Admin Panel</h1>
-                        <p className="text-xs text-gray-500">E-commerce Dashboard</p>
-                    </div>
-                </div>
-            </div>
+        <>
+            {/* Mobile Overlay */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+                    onClick={onClose}
+                />
+            )}
 
-            {/* Navigation Menu */}
-            <nav className="space-y-1 p-4">
-                {/* Dashboard */}
-                <NavLink
-                    to="/admin/dashboard"
-                    className={({ isActive }) => `${linkBase} ${isActive ? activeLink : inactiveLink}`}
-                >
-                    <div className="flex items-center gap-3">
-                        <LayoutDashboard className="h-5 w-5" />
-                        <span>Dashboard</span>
+            {/* Sidebar */}
+            <aside
+                className={`fixed top-0 left-0 h-full bg-white shadow-xl z-50 transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'
+                    } lg:translate-x-0 lg:static lg:shadow-none w-64 flex flex-col`}
+            >
+                {/* Sidebar Header */}
+                <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+                    <div className="flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
+                            <span className="text-lg font-bold text-white">A</span>
+                        </div>
+                        <span className="text-xl font-bold text-gray-800">Admin Panel</span>
                     </div>
-                </NavLink>
-
-                {/* Products */}
-                <div>
                     <button
-                        onClick={() => toggleMenu('products')}
-                        className={`${linkBase} ${inactiveLink} w-full`}
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700 lg:hidden"
                     >
-                        <div className="flex items-center gap-3">
-                            <Package className="h-5 w-5" />
-                            <span>Products</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-600">
-                                {counts.products.total}
-                            </span>
-                            {openMenus.products ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                        </div>
+                        <X size={24} />
                     </button>
-                    {openMenus.products && (
-                        <div className="mt-1 space-y-1">
-                            <NavLink to="/admin/products" className={({ isActive }) => `${submenuLinkBase} ${isActive ? activeSubmenuLink : inactiveSubmenuLink}`}>
-                                <Grid className="h-4 w-4" />
-                                <span>All Products</span>
-                            </NavLink>
-                            <NavLink to="/admin/products/add" className={({ isActive }) => `${submenuLinkBase} ${isActive ? activeSubmenuLink : inactiveSubmenuLink}`}>
-                                <PlusSquare className="h-4 w-4" />
-                                <span>Add Product</span>
-                            </NavLink>
-                            <NavLink to="/admin/categories" className={({ isActive }) => `${submenuLinkBase} ${isActive ? activeSubmenuLink : inactiveSubmenuLink}`}>
-                                <Layers className="h-4 w-4" />
-                                <span>Categories</span>
-                            </NavLink>
-                            <NavLink to="/admin/categories/sub" className={({ isActive }) => `${submenuLinkBase} ${isActive ? activeSubmenuLink : inactiveSubmenuLink}`}>
-                                <Layers className="h-4 w-4" />
-                                <span>Sub Categories</span>
-                            </NavLink>
-                            <NavLink to="/admin/brands" className={({ isActive }) => `${submenuLinkBase} ${isActive ? activeSubmenuLink : inactiveSubmenuLink}`}>
-                                <Tag className="h-4 w-4" />
-                                <span>Brands</span>
-                            </NavLink>
-                            <NavLink to="/admin/attributes" className={({ isActive }) => `${submenuLinkBase} ${isActive ? activeSubmenuLink : inactiveSubmenuLink}`}>
-                                <Settings className="h-4 w-4" />
-                                <span>Attributes</span>
-                            </NavLink>
-                            <NavLink to="/admin/products/bulk-upload" className={({ isActive }) => `${submenuLinkBase} ${isActive ? activeSubmenuLink : inactiveSubmenuLink}`}>
-                                <Upload className="h-4 w-4" />
-                                <span>Bulk Upload</span>
-                            </NavLink>
-                            <NavLink to="/admin/reviews" className={({ isActive }) => `${submenuLinkBase} ${isActive ? activeSubmenuLink : inactiveSubmenuLink}`}>
-                                <Star className="h-4 w-4" />
-                                <span>Product Reviews</span>
-                            </NavLink>
-                        </div>
-                    )}
                 </div>
 
-                {/* Inventory */}
-                <div>
-                    <button
-                        onClick={() => toggleMenu('inventory')}
-                        className={`${linkBase} ${inactiveLink} w-full`}
-                    >
-                        <div className="flex items-center gap-3">
-                            <Warehouse className="h-5 w-5" />
-                            <span>Inventory</span>
+                {/* Navigation Menu */}
+                <nav className="flex-1 overflow-y-auto px-3 py-4">
+                    <ul className="space-y-1">
+                        {menuItems.map(item => renderMenuItem(item))}
+                    </ul>
+                </nav>
+
+                {/* Sidebar Footer */}
+                <div className="border-t border-gray-200 p-4">
+                    <div className="flex items-center gap-3 rounded-lg bg-gray-50 px-4 py-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600">
+                            <span className="text-sm font-semibold text-white">AD</span>
                         </div>
-                        {openMenus.inventory ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </button>
-                    {openMenus.inventory && (
-                        <div className="mt-1 space-y-1">
-                            <NavLink to="/admin/inventory" className={({ isActive }) => `${submenuLinkBase} ${isActive ? activeSubmenuLink : inactiveSubmenuLink}`}>
-                                <Database className="h-4 w-4" />
-                                <span>Stock Management</span>
-                            </NavLink>
-                            <NavLink to="/admin/inventory/low-stock" className={({ isActive }) => `${submenuLinkBase} ${isActive ? activeSubmenuLink : inactiveSubmenuLink}`}>
-                                <AlertCircle className="h-4 w-4" />
-                                <span>Low Stock Alert</span>
-                            </NavLink>
-                            <NavLink to="/admin/inventory/history" className={({ isActive }) => `${submenuLinkBase} ${isActive ? activeSubmenuLink : inactiveSubmenuLink}`}>
-                                <History className="h-4 w-4" />
-                                <span>Stock History</span>
-                            </NavLink>
+                        <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-semibold text-gray-800">Admin User</p>
+                            <p className="truncate text-xs text-gray-500">admin@example.com</p>
                         </div>
-                    )}
+                    </div>
                 </div>
-
-                {/* The rest of the menu sections (Orders, Customers, Marketing, Payments, Shipping, CMS, Reports, Users, Settings, Appearance, System, Support) can be added in the same pattern using toggleMenu and NavLink components. */}
-
-            </nav>
-        </aside>
+            </aside>
+        </>
     );
 };
 

@@ -1,32 +1,49 @@
+// src/redux/slices/DashboardSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axiosInstance from '../../utils/axios';
 
-// Replace with your backend API URL
 const API_URL = 'http://localhost:5000/api/admin/dashboard';
 
+// Fetch dashboard stats
 export const fetchDashboardStats = createAsyncThunk(
     'dashboard/fetchStats',
     async (dateRange = 'week', { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem('token');
-            const { data } = await axios.get(`${API_URL}?range=${dateRange}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            return data;
-        } catch (err) {
-            return rejectWithValue(err.response?.data?.message || 'Failed to load stats');
+            const response = await axiosInstance.get(`/dashboard/stats?range=${dateRange}`);
+            if (response.data.success) {
+                return response.data.data;
+            } else {
+                return rejectWithValue(response.data.message || 'Failed to fetch dashboard stats');
+            }
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch dashboard stats');
         }
     }
 );
 
+const initialState = {
+    stats: {
+        totalRevenue: 0,
+        revenueChange: 0,
+        totalOrders: 0,
+        ordersChange: 0,
+        totalCustomers: 0,
+        customersChange: 0,
+        totalProducts: 0,
+        productsChange: 0
+    },
+    loading: false,
+    error: null
+};
+
 const dashboardSlice = createSlice({
     name: 'dashboard',
-    initialState: {
-        stats: {},
-        loading: false,
-        error: null,
+    initialState,
+    reducers: {
+        clearDashboardError: (state) => {
+            state.error = null;
+        }
     },
-    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(fetchDashboardStats.pending, (state) => {
@@ -41,7 +58,8 @@ const dashboardSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             });
-    },
+    }
 });
 
+export const { clearDashboardError } = dashboardSlice.actions;
 export default dashboardSlice.reducer;
