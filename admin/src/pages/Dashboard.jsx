@@ -1,13 +1,8 @@
+// src/pages/Dashboard.jsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    ShoppingCart,
-    Users,
-    Package,
-    DollarSign,
-    Activity,
-    AlertTriangle,
-    Calendar
+    ShoppingCart, Users, Package, DollarSign, Activity, AlertTriangle, Calendar
 } from 'lucide-react';
 
 // Components
@@ -27,18 +22,18 @@ import { fetchDashboardStats } from '../redux/slices/DashboardSlice';
 
 const Dashboard = () => {
     const dispatch = useDispatch();
-    const { stats, loading, error } = useSelector((state) => state.dashboard);
+
+    // ✅ Correct slice key and default stats object
+    const { stats = {}, loading, error } = useSelector((state) => state.dashboard);
     const { user } = useSelector((state) => state.auth);
 
-    const [dateRange, setDateRange] = useState('week'); // week, month, year
+    const [dateRange, setDateRange] = useState('week'); // today, week, month, year
 
     useEffect(() => {
         dispatch(fetchDashboardStats(dateRange));
     }, [dispatch, dateRange]);
 
-    if (loading) {
-        return <Loader />;
-    }
+    if (loading) return <Loader />;
 
     if (error) {
         return (
@@ -55,36 +50,36 @@ const Dashboard = () => {
     const statsData = [
         {
             title: 'Total Revenue',
-            value: `৳${stats?.totalRevenue?.toLocaleString() || '0'}`,
-            change: stats?.revenueChange || 0,
+            value: `৳${stats.totalRevenue?.toLocaleString() || '0'}`,
+            change: stats.revenueChange || 0,
             icon: DollarSign,
             color: 'blue',
-            trend: stats?.revenueChange >= 0 ? 'up' : 'down'
+            trend: (stats.revenueChange || 0) >= 0 ? 'up' : 'down',
         },
         {
             title: 'Total Orders',
-            value: stats?.totalOrders?.toLocaleString() || '0',
-            change: stats?.ordersChange || 0,
+            value: stats.totalOrders?.toLocaleString() || '0',
+            change: stats.ordersChange || 0,
             icon: ShoppingCart,
             color: 'green',
-            trend: stats?.ordersChange >= 0 ? 'up' : 'down'
+            trend: (stats.ordersChange || 0) >= 0 ? 'up' : 'down',
         },
         {
             title: 'Total Customers',
-            value: stats?.totalCustomers?.toLocaleString() || '0',
-            change: stats?.customersChange || 0,
+            value: stats.totalCustomers?.toLocaleString() || '0',
+            change: stats.customersChange || 0,
             icon: Users,
             color: 'purple',
-            trend: stats?.customersChange >= 0 ? 'up' : 'down'
+            trend: (stats.customersChange || 0) >= 0 ? 'up' : 'down',
         },
         {
             title: 'Total Products',
-            value: stats?.totalProducts?.toLocaleString() || '0',
-            change: stats?.productsChange || 0,
+            value: stats.totalProducts?.toLocaleString() || '0',
+            change: stats.productsChange || 0,
             icon: Package,
             color: 'orange',
-            trend: stats?.productsChange >= 0 ? 'up' : 'down'
-        }
+            trend: (stats.productsChange || 0) >= 0 ? 'up' : 'down',
+        },
     ];
 
     return (
@@ -116,12 +111,12 @@ const Dashboard = () => {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                {statsData.map((stat, index) => (
-                    <StatCard key={index} {...stat} />
+                {statsData.map((stat, i) => (
+                    <StatCard key={i} {...stat} />
                 ))}
             </div>
 
-            {/* Charts Section */}
+            {/* Charts */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <SalesChart dateRange={dateRange} />
                 <RevenueChart dateRange={dateRange} />
@@ -132,40 +127,14 @@ const Dashboard = () => {
 
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                {/* Left Column - 2/3 width */}
                 <div className="space-y-6 lg:col-span-2">
                     <RecentOrders />
                     <TopProducts />
                 </div>
-
-                {/* Right Column - 1/3 width */}
                 <div className="space-y-6">
                     <LowStockAlert />
                     <RecentCustomers />
                     <ActivityFeed />
-                </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="rounded-lg bg-white p-6 shadow-md">
-                <h2 className="mb-4 text-xl font-bold text-gray-900">Quick Actions</h2>
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                    <button className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-4 transition-colors hover:border-blue-500 hover:bg-blue-50">
-                        <Package className="mb-2 h-8 w-8 text-blue-500" />
-                        <span className="text-sm font-medium text-gray-700">Add Product</span>
-                    </button>
-                    <button className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-4 transition-colors hover:border-green-500 hover:bg-green-50">
-                        <ShoppingCart className="mb-2 h-8 w-8 text-green-500" />
-                        <span className="text-sm font-medium text-gray-700">New Order</span>
-                    </button>
-                    <button className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-4 transition-colors hover:border-purple-500 hover:bg-purple-50">
-                        <Users className="mb-2 h-8 w-8 text-purple-500" />
-                        <span className="text-sm font-medium text-gray-700">Add Customer</span>
-                    </button>
-                    <button className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-4 transition-colors hover:border-orange-500 hover:bg-orange-50">
-                        <Activity className="mb-2 h-8 w-8 text-orange-500" />
-                        <span className="text-sm font-medium text-gray-700">View Reports</span>
-                    </button>
                 </div>
             </div>
         </div>

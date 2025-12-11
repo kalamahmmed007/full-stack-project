@@ -12,14 +12,14 @@ import adminUiReducer from './slices/UiSlice';
 const store = configureStore({
     reducer: {
         Auth: AuthReducer,
-        adminProduct: adminProductReducer,
-        adminOrder: adminOrderReducer,
-        adminUser: adminUserReducer,
-        adminCategory: adminCategoryReducer,
-        adminCoupon: adminCouponReducer,
-        adminReview: adminReviewReducer,
+        Product: adminProductReducer,
+        Order: adminOrderReducer,
+        User: adminUserReducer,
+        Category: adminCategoryReducer,
+        Coupon: adminCouponReducer,
+        Review: adminReviewReducer,
         Dashboard: DashboardReducer,
-        adminUi: adminUiReducer
+        Ui: adminUiReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

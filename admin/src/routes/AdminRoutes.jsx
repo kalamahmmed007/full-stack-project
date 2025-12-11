@@ -56,7 +56,6 @@ import Unauthorized from "../pages/Unauthorized";
 const AdminRoutes = () => {
     return (
         <Routes>
-            {/* Auth Routes - Public */}
             <Route element={<AuthLayout />}>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
