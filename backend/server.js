@@ -8,6 +8,7 @@ import productRouter from './routes/productRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
 import authRouter from './routes/authRoutes.js';
+import brandRouter from './routes/brandRoutes.js';
 
 
 // App config
@@ -29,6 +30,10 @@ app.use('/api/users', userRouter);
 app.use('/api/product', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
+app.use('/api/brand', brandRouter);
+
+//serve uploads folder statically
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.get('/', (req, res) => {
     res.send('Backend is running');

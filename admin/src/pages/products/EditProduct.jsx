@@ -16,6 +16,7 @@ const EditProduct = ({ token }) => {
         price: "",
         stock: "",
         category: "",
+        level: ""
     });
     const [loading, setLoading] = useState(true);
 

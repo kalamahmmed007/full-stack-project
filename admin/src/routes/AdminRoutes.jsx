@@ -43,6 +43,11 @@ import FlashSales from "../pages/marketing/FlashSales";
 import Banners from "../pages/marketing/Banners";
 import Campaigns from "../pages/marketing/Campaigns";
 
+//Brands
+import Brands from "../pages/brands/BrandList";
+import AddBrand from "../pages/brands/AddBrand";
+import EditBrand from "../pages/brands/EditBrand";
+
 // Other Pages
 import Reviews from "../pages/Reviews";
 import Reports from "../pages/Reports";
@@ -84,6 +89,11 @@ const AdminRoutes = () => {
 
                     {/* Inventory */}
                     <Route path="/inventory" element={<Inventory />} />
+
+                    {/* Brands */}
+                    <Route path="/brands" element={<Brands />} />
+                    <Route path="/brands/add" element={<AddBrand />} />
+                    <Route path="/brands/edit/:id" element={<EditBrand />} />
 
                     {/* Orders */}
                     <Route path="/orders" element={<Orders />} />

@@ -7,6 +7,7 @@ import adminCategoryReducer from './slices/CategorySlice';
 import adminCouponReducer from './slices/CouponSlice';
 import adminReviewReducer from './slices/ReviewSlice';
 import DashboardReducer from './slices/DashboardSlice';
+import BrandReducer from './slices/brandSlice';
 import adminUiReducer from './slices/UiSlice';
 
 const store = configureStore({
@@ -19,6 +20,7 @@ const store = configureStore({
         Coupon: adminCouponReducer,
         Review: adminReviewReducer,
         Dashboard: DashboardReducer,
+        Brand: BrandReducer,
         Ui: adminUiReducer
     },
     middleware: (getDefaultMiddleware) =>

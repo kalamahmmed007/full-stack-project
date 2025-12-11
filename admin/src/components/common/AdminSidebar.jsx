@@ -57,19 +57,31 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             id: 2,
             title: "Products",
             icon: "Package",
-            path: "/admin/products",
+            path: "/products",
             badge: null,
             submenu: [
                 { title: "All Products", path: "/products" },
                 { title: "Add Product", path: "/products/add" },
-                { title: "Categories", path: "/categories" },
-                { title: "Brands", path: "/brands" },
+                { title: "edit Product", path: "/products/edit/:id" },
                 { title: "Attributes", path: "/attributes" },
                 { title: "Bulk Upload", path: "/products/bulk-upload" }
             ]
         },
         {
             id: 3,
+            title: "Categories",
+            icon: "Archive",
+            path: "/categories",
+            submenu: [
+                { title: "All Categories", path: "/categories" },
+                { title: "Add Category", path: "/categories/add" },
+                { title: "Subcategories", path: "/subcategories" },
+                { title: "Add Subcategory", path: "/subcategories/add" },
+
+            ]
+        },
+        {
+            id: 4,
             title: "Inventory",
             icon: "Archive",
             path: "/inventory",
@@ -82,7 +94,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             ]
         },
         {
-            id: 4,
+            id: 5,
             title: "Orders",
             icon: "ShoppingCart",
             path: "/orders",
@@ -97,7 +109,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             ]
         },
         {
-            id: 5,
+            id: 6,
             title: "Customers",
             icon: "Users",
             path: "/customers",
@@ -108,7 +120,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             ]
         },
         {
-            id: 6,
+            id: 7,
             title: "Users & Roles",
             icon: "UserCog",
             path: "/users",
@@ -120,7 +132,18 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             ]
         },
         {
-            id: 7,
+            id: 8,
+            title: "Brands",
+            icon: "Archive",
+            path: "/brands",
+            submenu: [
+                { title: "All Brands", path: "/brands" },
+                { title: "Add Brand", path: "/brands/add" },
+                { title: "Edit Brand", path: "/brands/edit/:id" }
+            ]
+        },
+        {
+            id: 9,
             title: "Marketing",
             icon: "Megaphone",
             path: "/marketing",
@@ -135,7 +158,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             ]
         },
         {
-            id: 8,
+            id: 10,
             title: "Reviews",
             icon: "Star",
             path: "/reviews",
@@ -148,7 +171,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             ]
         },
         {
-            id: 9,
+            id: 11,
             title: "Shipping",
             icon: "Truck",
             path: "/shipping",
@@ -159,7 +182,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             ]
         },
         {
-            id: 10,
+            id: 12,
             title: "Payments",
             icon: "CreditCard",
             path: "/payments",
@@ -170,7 +193,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             ]
         },
         {
-            id: 11,
+            id: 13,
             title: "CMS",
             icon: "FileText",
             path: "/cms",
@@ -182,7 +205,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             ]
         },
         {
-            id: 12,
+            id: 14,
             title: "Reports",
             icon: "BarChart3",
             path: "/reports",
@@ -197,7 +220,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             ]
         },
         {
-            id: 13,
+            id: 15,
             title: "Settings",
             icon: "Settings",
             path: "/settings",
@@ -218,14 +241,14 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             ]
         },
         {
-            id: 14,
+            id: 17,
             title: "Notifications",
             icon: "Bell",
             path: "/notifications",
             badge: "8"
         },
         {
-            id: 15,
+            id: 18,
             title: "Activity Logs",
             icon: "Activity",
             path: "/activity-logs"
