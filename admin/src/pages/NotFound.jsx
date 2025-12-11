@@ -11,7 +11,7 @@ const NotFound = () => {
                 <h1 className="mb-2 text-4xl font-bold text-gray-800">404</h1>
                 <p className="mb-6 text-lg text-gray-600">Oops! The page you are looking for does not exist.</p>
                 <Link
-                    to="/admin/dashboard"
+                    to="/dashboard"
                     className="inline-block rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700"
                 >
                     Go Back to Dashboard
