@@ -1,17 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const adminUserSlice = createSlice({
-    name: "adminUser",
-    initialState: {
-        users: [],
-        loading: false,
-    },
+const initialState = {
+    loading: false,
+    user: null,
+    error: null,
+};
+
+const userSlice = createSlice({
+    name: "user",
+    initialState,
     reducers: {
-        setUsers: (state, action) => {
-            state.users = action.payload;
-        }
-    }
+        loginRequest: (state) => {
+            state.loading = true;
+        },
+        loginSuccess: (state, action) => {
+            state.loading = false;
+            state.user = action.payload;
+            state.error = null;
+        },
+        loginFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+    },
 });
 
-
-export default adminUserSlice.reducer;
+export default userSlice.reducer;
