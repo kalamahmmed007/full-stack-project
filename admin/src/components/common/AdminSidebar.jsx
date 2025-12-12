@@ -105,7 +105,9 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                 { title: "Processing", path: "/orders?status=processing" },
                 { title: "Shipped", path: "/orders?status=shipped" },
                 { title: "Delivered", path: "/orders?status=delivered" },
-                { title: "Cancelled", path: "/orders?status=cancelled" }
+                { title: "Cancelled", path: "/orders?status=cancelled" },
+                { title: "Returns", path: "/orders/returns" },
+                { title: "track Order", path: "/orders/track" }
             ]
         },
         {
@@ -311,7 +313,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
 
                         {/* Submenu */}
                         {isMenuOpen && (
-                            <ul className="ml-4 mt-1 border-l-2 border-gray-200 pl-4">
+                            <ul className="pl-4 mt-1 ml-4 border-l-2 border-gray-200">
                                 {item.submenu.map((subItem, index) => (
                                     <li key={index}>
                                         <Link
@@ -369,9 +371,9 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                     } lg:translate-x-0 lg:static lg:shadow-none w-64 flex flex-col`}
             >
                 {/* Sidebar Header */}
-                <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
                     <div className="flex items-center gap-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
+                        <div className="flex items-center justify-center w-8 h-8 bg-blue-600 rounded-lg">
                             <span className="text-lg font-bold text-white">A</span>
                         </div>
                         <span className="text-xl font-bold text-gray-800">Admin Panel</span>
@@ -385,21 +387,21 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Navigation Menu */}
-                <nav className="flex-1 overflow-y-auto px-3 py-4">
+                <nav className="flex-1 px-3 py-4 overflow-y-auto">
                     <ul className="space-y-1">
                         {menuItems.map(item => renderMenuItem(item))}
                     </ul>
                 </nav>
 
                 {/* Sidebar Footer */}
-                <div className="border-t border-gray-200 p-4">
-                    <div className="flex items-center gap-3 rounded-lg bg-gray-50 px-4 py-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600">
+                <div className="p-4 border-t border-gray-200">
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-50">
+                        <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-full">
                             <span className="text-sm font-semibold text-white">AD</span>
                         </div>
-                        <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-semibold text-gray-800">Admin User</p>
-                            <p className="truncate text-xs text-gray-500">admin@example.com</p>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-800 truncate">Admin User</p>
+                            <p className="text-xs text-gray-500 truncate">admin@example.com</p>
                         </div>
                     </div>
                 </div>

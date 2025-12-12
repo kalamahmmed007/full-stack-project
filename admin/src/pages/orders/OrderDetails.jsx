@@ -1,11 +1,20 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getOrder, changeOrderStatus, updateOrderRealtime } from "../../redux/slices/orderSlice";
+import {
+    getOrder,
+    changeOrderStatus,
+    updateOrderRealtime,
+} from "../../redux/slices/orderSlice";
 import { toast } from "react-toastify";
 import { CheckCircle, XCircle, Truck, Clock } from "lucide-react";
 import { io } from "socket.io-client";
 import { backendUrl } from "../../config";
+import OrderStatus from "../../components/orders/OrderStatus";
+import OrderTimeline from "../../components/orders/OrderTimeline";
+import InvoiceGenerator from "../../components/orders/InvoiceGenerator";
+import RefundForm from "../../components/orders/RefundForm";
+import TrackingInfo from "../../components/orders/TrackingInfo";
 
 const OrderDetails = () => {
     const { orderId } = useParams();
@@ -16,28 +25,29 @@ const OrderDetails = () => {
         (state) => state.Order
     );
 
+    // Fetch order on mount
     useEffect(() => {
-        dispatch(getOrder(orderId));
+        if (orderId) dispatch(getOrder(orderId));
     }, [dispatch, orderId]);
 
-    // Initialize socket for live updates
+    // Socket for live updates
     useEffect(() => {
-        const socket = io(backendUrl, { transports: ["websocket"] });
+        if (!orderId) return;
 
-        // Join a room for this order (optional)
+        const socket = io(backendUrl, { transports: ["websocket"] });
         socket.emit("join_order_room", orderId);
 
-        // Listen for order updates
-        socket.on("order_status_updated", (data) => {
-            if (data._id === orderId) {
-                dispatch(updateOrderRealtime(data));
-                toast.info(`Order status updated to ${data.status}`);
+        socket.on("order_status_updated", (updatedOrder) => {
+            if (updatedOrder._id === orderId) {
+                dispatch(updateOrderRealtime(updatedOrder));
+                toast.info(`Order status updated to ${updatedOrder.status}`);
             }
         });
 
         return () => socket.disconnect();
     }, [dispatch, orderId]);
 
+    // Status change handler
     const handleStatusChange = (status) => {
         dispatch(changeOrderStatus({ id: orderId, status }))
             .unwrap()
@@ -65,9 +75,15 @@ const OrderDetails = () => {
             {/* CUSTOMER DETAILS */}
             <div className="p-6 mb-6 bg-white rounded-lg shadow">
                 <h2 className="mb-2 text-lg font-semibold">Customer Details</h2>
-                <p><span className="font-medium">Name:</span> {order.customerName}</p>
-                <p><span className="font-medium">Email:</span> {order.customerEmail}</p>
-                <p><span className="font-medium">Phone:</span> {order.customerPhone}</p>
+                <p>
+                    <span className="font-medium">Name:</span> {order.customerName}
+                </p>
+                <p>
+                    <span className="font-medium">Email:</span> {order.customerEmail}
+                </p>
+                <p>
+                    <span className="font-medium">Phone:</span> {order.customerPhone}
+                </p>
             </div>
 
             {/* ORDER STATUS */}
@@ -75,6 +91,7 @@ const OrderDetails = () => {
                 <h2 className="mb-2 text-lg font-semibold">Order Status</h2>
                 <div className="flex items-center gap-2">
                     {order.status === "pending" && <Clock className="w-5 h-5 text-yellow-500" />}
+                    {order.status === "processing" && <Clock className="w-5 h-5 text-yellow-500" />}
                     {order.status === "shipped" && <Truck className="w-5 h-5 text-blue-500" />}
                     {order.status === "delivered" && <CheckCircle className="w-5 h-5 text-green-500" />}
                     {order.status === "cancelled" && <XCircle className="w-5 h-5 text-red-500" />}
@@ -86,40 +103,37 @@ const OrderDetails = () => {
                 </p>
 
                 <div className="flex gap-3 mt-4">
-                    <button
-                        onClick={() => handleStatusChange("processing")}
-                        className="px-3 py-1 text-white bg-yellow-500 rounded hover:bg-yellow-600"
-                    >
-                        Processing
-                    </button>
-                    <button
-                        onClick={() => handleStatusChange("shipped")}
-                        className="px-3 py-1 text-white bg-blue-500 rounded hover:bg-blue-600"
-                    >
-                        Shipped
-                    </button>
-                    <button
-                        onClick={() => handleStatusChange("delivered")}
-                        className="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600"
-                    >
-                        Delivered
-                    </button>
-                    <button
-                        onClick={() => handleStatusChange("cancelled")}
-                        className="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600"
-                    >
-                        Cancel
-                    </button>
+                    {["processing", "shipped", "delivered", "cancelled"].map((status) => (
+                        <button
+                            key={status}
+                            onClick={() => handleStatusChange(status)}
+                            className={`px-3 py-1 text-white rounded ${status === "processing"
+                                    ? "bg-yellow-500 hover:bg-yellow-600"
+                                    : status === "shipped"
+                                        ? "bg-blue-500 hover:bg-blue-600"
+                                        : status === "delivered"
+                                            ? "bg-green-500 hover:bg-green-600"
+                                            : "bg-red-500 hover:bg-red-600"
+                                }`}
+                        >
+                            {status.charAt(0).toUpperCase() + status.slice(1)}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* PRODUCT LIST */}
-            <div className="p-6 bg-white rounded-lg shadow">
+            {/* PRODUCTS LIST */}
+            <div className="p-6 mb-6 bg-white rounded-lg shadow">
                 <h2 className="mb-2 text-lg font-semibold">Products</h2>
                 <ul className="divide-y divide-gray-200">
                     {order.products?.map((product) => (
-                        <li key={product._id} className="flex items-center justify-between py-2">
-                            <span>{product.name} x {product.quantity}</span>
+                        <li
+                            key={product._id}
+                            className="flex items-center justify-between py-2"
+                        >
+                            <span>
+                                {product.name} x {product.quantity}
+                            </span>
                             <span>${product.price.toFixed(2)}</span>
                         </li>
                     ))}
@@ -128,6 +142,15 @@ const OrderDetails = () => {
                     <span>Total:</span>
                     <span>${order.total.toFixed(2)}</span>
                 </div>
+            </div>
+
+            {/* ADDITIONAL COMPONENTS */}
+            <div className="space-y-6">
+                <OrderTimeline order={order} />
+                <OrderStatus order={order} onStatusChange={handleStatusChange} />
+                <InvoiceGenerator order={order} />
+                <RefundForm order={order} />
+                <TrackingInfo order={order} />
             </div>
         </div>
     );
