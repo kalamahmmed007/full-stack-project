@@ -6,19 +6,21 @@ const api = axios.create({
     withCredentials: true,
 });
 
-export const fetchOrders = async (params = {}) => {
-    const { data } = await api.get("/orders", { params });
-    return data;
-};
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
 
-export const fetchOrderById = async (id) => {
-    const { data } = await api.get(`/orders/${id}`);
-    return data;
-};
+export const fetchOrders = (params = {}) =>
+    api.get("/orders", { params });
 
-export const updateOrderStatus = async (id, payload) => {
-    const { data } = await api.put(`/orders/${id}/status`, payload);
-    return data;
-};
+export const fetchOrderById = (id) =>
+    api.get(`/orders/${id}`);
+
+export const updateOrderStatus = (id, payload) =>
+    api.put(`/orders/${id}/status`, payload);
 
 export default api;

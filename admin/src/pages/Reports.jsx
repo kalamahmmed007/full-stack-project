@@ -15,13 +15,13 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const reportsList = [
-    { name: "Sales Report", icon: <BarChart3 className="h-6 w-6" />, path: "/admin/reports/sales" },
-    { name: "Revenue Report", icon: <FileBarChart className="h-6 w-6" />, path: "/admin/reports/revenue" },
-    { name: "Product Report", icon: <Package className="h-6 w-6" />, path: "/admin/reports/products" },
-    { name: "Customer Report", icon: <Users className="h-6 w-6" />, path: "/admin/reports/customers" },
-    { name: "Inventory Report", icon: <Warehouse className="h-6 w-6" />, path: "/admin/reports/inventory" },
-    { name: "Tax Report", icon: <FileText className="h-6 w-6" />, path: "/admin/reports/tax" },
-    { name: "Export Data", icon: <Upload className="h-6 w-6" />, path: "/admin/reports/export" },
+    { name: "Sales Report", icon: <BarChart3 className="w-6 h-6" />, path: "/reports/sales" },
+    { name: "Revenue Report", icon: <FileBarChart className="w-6 h-6" />, path: "/reports/revenue" },
+    { name: "Product Report", icon: <Package className="w-6 h-6" />, path: "/reports/products" },
+    { name: "Customer Report", icon: <Users className="w-6 h-6" />, path: "/reports/customers" },
+    { name: "Inventory Report", icon: <Warehouse className="w-6 h-6" />, path: "/reports/inventory" },
+    { name: "Tax Report", icon: <FileText className="w-6 h-6" />, path: "/reports/tax" },
+    { name: "Export Data", icon: <Upload className="w-6 h-6" />, path: "/reports/export" },
 ];
 
 const Reports = () => {
@@ -47,7 +47,7 @@ const Reports = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <div className="min-h-screen p-6 bg-gray-50">
             <h1 className="mb-6 text-2xl font-bold">Reports</h1>
             {loading ? (
                 <p className="text-gray-500">Loading...</p>
@@ -57,10 +57,10 @@ const Reports = () => {
                         <div
                             key={report.name}
                             onClick={() => navigate(report.path)}
-                            className="flex cursor-pointer items-center justify-between rounded-lg bg-white p-4 shadow transition hover:shadow-lg"
+                            className="flex items-center justify-between p-4 transition bg-white rounded-lg shadow cursor-pointer hover:shadow-lg"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="rounded-lg bg-blue-50 p-3">{report.icon}</div>
+                                <div className="p-3 rounded-lg bg-blue-50">{report.icon}</div>
                                 <div>
                                     <p className="font-semibold">{report.name}</p>
                                     <p className="text-sm text-gray-500">

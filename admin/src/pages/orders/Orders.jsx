@@ -1,85 +1,92 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import { backendUrl } from "../../config";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import notificationSound from "../../assets/notification.mp3";
 import { io } from "socket.io-client";
-import OrderList from '../../components/orders/OrderList';
+import OrderList from "../../components/orders/OrderList";
 
 const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
-  const [socket, setSocket] = useState(null);
+  const socketRef = useRef(null);
 
-  // Play notification sound
+  // Play notification sound (safe)
   const playNotificationSound = () => {
     const audio = new Audio(notificationSound);
-    audio.play();
+    audio.play().catch(() => { });
   };
 
   // Fetch all orders
   const fetchAllOrders = async () => {
     if (!token) return;
+
     try {
-      const response = await axios.post(
+      const res = await axios.post(
         `${backendUrl}/api/order/list`,
         {},
         { headers: { token } }
       );
-      if (response.data.success) {
-        setOrders(response.data.orders);
+
+      if (res.data.success) {
+        setOrders(res.data.orders);
       } else {
-        toast.error(response.data.message);
+        toast.error(res.data.message);
       }
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Something went wrong');
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Something went wrong");
     }
   };
 
   // Update order status
-  const statusHandler = async (event, orderId) => {
-    const newStatus = event.target.value;
+  const statusHandler = async (e, orderId) => {
+    const status = e.target.value;
+
     try {
-      const response = await axios.post(
+      const res = await axios.post(
         `${backendUrl}/api/order/status`,
-        { orderId, status: newStatus },
+        { orderId, status },
         { headers: { token } }
       );
-      if (response.data.success) {
-        toast.success("Order status updated");
-        socket?.emit("update_status", { orderId, status: newStatus });
 
-        setOrders(prev =>
-          prev.map(order =>
-            order._id === orderId ? { ...order, status: newStatus } : order
+      if (res.data.success) {
+        toast.success("Order status updated");
+
+        socketRef.current?.emit("update_status", {
+          orderId,
+          status,
+        });
+
+        setOrders((prev) =>
+          prev.map((o) =>
+            o._id === orderId ? { ...o, status } : o
           )
         );
-      } else {
-        toast.error(response.data.message);
       }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update status");
+    } catch (err) {
+      toast.error("Failed to update status");
     }
   };
 
-  // Initialize socket & live updates
+  // Socket init
   useEffect(() => {
     if (!token) return;
 
-    const newSocket = io(backendUrl, { transports: ["websocket"] });
-    setSocket(newSocket);
-
-    newSocket.emit("admin_join");
-
-    newSocket.on("new_order_alert", (order) => {
-      playNotificationSound();
-      toast.info("🔔 New Order Arrived!");
-      setOrders(prev => [order, ...prev]);
+    socketRef.current = io("http://localhost:5000", {
+      transports: ["websocket"],
     });
 
-    newSocket.on("admin_status_update", ({ orderId, status }) => {
-      setOrders(prev =>
-        prev.map(order =>
-          order._id === orderId ? { ...order, status } : order
+    socketRef.current.emit("admin_join");
+
+    socketRef.current.on("new_order_alert", (order) => {
+      playNotificationSound();
+      toast.info("🔔 New Order Arrived!");
+      setOrders((prev) => [order, ...prev]);
+    });
+
+    socketRef.current.on("admin_status_update", ({ orderId, status }) => {
+      setOrders((prev) =>
+        prev.map((o) =>
+          o._id === orderId ? { ...o, status } : o
         )
       );
     });
@@ -87,7 +94,7 @@ const Orders = ({ token }) => {
     fetchAllOrders();
 
     return () => {
-      newSocket.disconnect();
+      socketRef.current.disconnect();
     };
   }, [token]);
 

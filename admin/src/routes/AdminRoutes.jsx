@@ -96,16 +96,26 @@ const AdminRoutes = () => {
                     <Route path="/brands/edit/:id" element={<EditBrand />} />
 
                     {/* Orders */}
-                    <Route path="/orders" element={<Orders />} />
-                    <Route path="/orders/:id" element={<OrderDetails />} />
+                    <Route element={<PermissionRoute permissions={["manage_orders"]} />}>
+                        <Route path="/orders" element={<Orders />} />
+                        <Route path="/orders/:id" element={<OrderDetails />} />
+                    </Route>
 
                     {/* Customers */}
                     <Route path="/customers" element={<Customers />} />
                     <Route path="/customers/:id" element={<CustomerDetails />} />
 
-                    {/* Users & Roles */}
-                    <Route path="/users" element={<Users />} />
-                    <Route path="/users/roles" element={<Roles />} />
+                    {/* SUPER ADMIN ONLY */}
+                    <Route element={<RoleRoute roles={["super-admin"]} />}>
+                        <Route path="/users" element={<Users />} />
+                        <Route path="/users/roles" element={<Roles />} />
+                        <Route path="/activity-logs" element={<ActivityLogs />} />
+                    </Route>
+
+                    {/* REPORTS */}
+                    <Route element={<PermissionRoute permissions={["view_reports"]} />}>
+                        <Route path="/reports" element={<Reports />} />
+                    </Route>
 
                     {/* Marketing */}
                     <Route path="/marketing/coupons" element={<Coupons />} />

@@ -2,6 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Calendar, DollarSign, ShoppingCart, Users, Package, AlertTriangle } from 'lucide-react';
+import { getOrders } from "../redux/slices/orderSlice";
+import { getAdmins } from "../redux/slices/adminSlice";
+import { Line, Pie } from "react-chartjs-2";
+import "chart.js/auto";
 
 // Components
 import StatCard from '../components/common/StatCard';
@@ -36,9 +40,9 @@ const Dashboard = () => {
 
     if (error) {
         return (
-            <div className="flex min-h-screen items-center justify-center">
+            <div className="flex items-center justify-center min-h-screen">
                 <div className="text-center">
-                    <AlertTriangle className="mx-auto mb-4 h-16 w-16 text-red-500" />
+                    <AlertTriangle className="w-16 h-16 mx-auto mb-4 text-red-500" />
                     <h2 className="mb-2 text-2xl font-bold text-gray-800">Error Loading Dashboard</h2>
                     <p className="text-gray-600">{error}</p>
                 </div>
@@ -82,7 +86,7 @@ const Dashboard = () => {
     ];
 
     return (
-        <div className="space-y-6 p-6">
+        <div className="p-6 space-y-6">
             {/* Header */}
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
@@ -94,11 +98,11 @@ const Dashboard = () => {
 
                 {/* Date Range Filter */}
                 <div className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-gray-500" />
+                    <Calendar className="w-5 h-5 text-gray-500" />
                     <select
                         value={dateRange}
                         onChange={(e) => setDateRange(e.target.value)}
-                        className="rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="today">Today</option>
                         <option value="week">This Week</option>
