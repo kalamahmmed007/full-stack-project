@@ -1,110 +1,252 @@
-import User from "../models/User.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
-// Dummy Admin
-const dummyAdmin = {
-    id: 'admin123',
-    name: 'Admin User',
-    email: 'admin@example.com',
-    password: 'adminpass' // plain text for dummy admin
+// Generate JWT Token and send response
+const sendTokenResponse = (user, statusCode, res) => {
+    const token = user.getJWTToken();
+
+    const options = {
+        expires: new Date(
+            Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+        ),
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+    };
+
+    res.status(statusCode).cookie('token', token, options).json({
+        success: true,
+        token,
+        user: {
+            id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar
+        }
+    });
 };
 
-// Register new user
-export const register = async (req, res) => {
+// @desc    Register user
+// @route   POST /api/auth/register
+// @access  Public
+exports.register = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
-
-        if (!name || !email || !password) {
-            return res.status(400).json({ msg: "All fields required" });
-        }
+        const { firstName, lastName, email, password, phone } = req.body;
 
         // Check if user exists
-        const exist = await User.findOne({ email });
-        if (exist) return res.status(400).json({ msg: "Email already exists" });
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({
+                success: false,
+                message: 'User already exists with this email'
+            });
+        }
 
-        // Create new user
-        const user = await User.create({ name, email, password }); // password hashed in pre-save hook
-
-        res.status(201).json({
-            msg: "User created successfully",
-            user: { id: user._id, name: user.name, email: user.email },
+        // Create user
+        const user = await User.create({
+            firstName,
+            lastName,
+            email,
+            password,
+            phone
         });
+
+        sendTokenResponse(user, 201, res);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: error.message });
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 };
 
-// Login user
-export const login = async (req, res) => {
+// @desc    Login user
+// @route   POST /api/auth/login
+// @access  Public
+exports.login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
+        // Validate email & password
         if (!email || !password) {
-            return res.status(400).json({ msg: "Email and password required" });
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide email and password'
+            });
         }
 
-        // Dummy admin login
-        if (email === dummyAdmin.email && password === dummyAdmin.password) {
-            const token = jwt.sign({ id: dummyAdmin.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-            return res.json({ success: true, token, user: dummyAdmin });
+        // Check for user
+        const user = await User.findOne({ email }).select('+password');
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
         }
 
-        // Normal user login
-        const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ msg: "Invalid credentials" });
+        // Check if user is active
+        if (!user.isActive) {
+            return res.status(401).json({
+                success: false,
+                message: 'Your account has been deactivated'
+            });
+        }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+        // Check if password matches
+        const isMatch = await user.comparePassword(password);
 
-        // Create tokens
-        const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-        const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
+        }
 
-        res.json({
-            msg: "Login success",
-            accessToken,
-            refreshToken,
-            user: { id: user._id, name: user.name, email: user.email },
-        });
+        sendTokenResponse(user, 200, res);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: error.message });
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 };
 
-// Get current user
-export const me = async (req, res) => {
+// @desc    Get current logged in user
+// @route   GET /api/auth/me
+// @access  Private
+exports.getMe = async (req, res, next) => {
     try {
-        const user = await User.findById(req.user.id).select("-password");
-        if (!user) return res.status(404).json({ msg: "User not found" });
-        res.json(user);
+        const user = await User.findById(req.user.id).populate('addresses');
+
+        res.status(200).json({
+            success: true,
+            user
+        });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: error.message });
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 };
 
-// Logout (optional, frontend deletes token)
-export const logout = async (req, res) => {
-    res.json({ msg: "Logged out successfully" });
+// @desc    Logout user / clear cookie
+// @route   GET /api/auth/logout
+// @access  Private
+exports.logout = async (req, res, next) => {
+    res.cookie('token', 'none', {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true
+    });
+
+    res.status(200).json({
+        success: true,
+        message: 'User logged out successfully'
+    });
 };
 
-// Refresh token
-export const refresh = async (req, res) => {
+// @desc    Forgot password
+// @route   POST /api/auth/forgot-password
+// @access  Public
+exports.forgotPassword = async (req, res, next) => {
     try {
-        const { token } = req.body;
-        if (!token) return res.status(400).json({ msg: "No refresh token" });
+        const user = await User.findOne({ email: req.body.email });
 
-        jwt.verify(token, process.env.JWT_REFRESH_SECRET, (err, user) => {
-            if (err) return res.status(403).json({ msg: "Invalid refresh token" });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'No user found with that email'
+            });
+        }
 
-            const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-            res.json({ accessToken });
+        // Get reset token
+        const resetToken = user.getResetPasswordToken();
+        await user.save({ validateBeforeSave: false });
+
+        // Create reset url
+        const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+
+        // TODO: Send email with reset URL
+        // For now, just return the token
+        res.status(200).json({
+            success: true,
+            message: 'Password reset email sent',
+            resetToken // Remove this in production
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: error.message });
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// @desc    Reset password
+// @route   PUT /api/auth/reset-password/:token
+// @access  Public
+exports.resetPassword = async (req, res, next) => {
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
+
+        // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await User.findOne({
+            _id: decoded.id,
+            resetPasswordToken: token,
+            resetPasswordExpire: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid or expired reset token'
+            });
+        }
+
+        // Set new password
+        user.password = password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+        await user.save();
+
+        sendTokenResponse(user, 200, res);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// @desc    Update password
+// @route   PUT /api/auth/update-password
+// @access  Private
+exports.updatePassword = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id).select('+password');
+
+        // Check current password
+        const isMatch = await user.comparePassword(req.body.currentPassword);
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: 'Current password is incorrect'
+            });
+        }
+
+        user.password = req.body.newPassword;
+        await user.save();
+
+        sendTokenResponse(user, 200, res);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 };

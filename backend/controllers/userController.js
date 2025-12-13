@@ -1,84 +1,184 @@
-import userModel from "../models/User.js";
-import validator from 'validator';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+const User = require('../models/User');
+const Address = require('../models/Address');
+const cloudinary = require('cloudinary').v2;
 
-const createToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET)
-}
-// Route for user login
-const loginUser = async (req, res) => {
+// Get User Profile
+exports.getUserProfile = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const user = await userModel.findOne({ email });
-        if (!user) {
-            return res.json({ success: false, message: "User doesn't exists" })
-        }
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.json({ success: false, message: "Invalid password" });
-        }
-        else {
-            const token = createToken(user._id);
-            res.json({ success: true, token: token });
-        }
+        const user = await User.findById(req.user._id)
+            .populate('addresses');
 
-    }
-    catch (err) {
-        console.error(err);
-        res.json({ success: false, message: error.message });
-    }
-}
-
-// Route for user register
-const registerUser = async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
-        const exists = await userModel.findOne({ email });
-        if (exists) {
-            return res.json({ success: false, message: "User already exists" });
-        }
-        if (!validator.isEmail(email)) {
-            return res.json({ success: false, message: "Please enter a valid email" });
-        }
-        if (password.length < 8) {
-            return res.json({ success: false, message: "Please enter a strong password" });
-        }
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        const newUser = new userModel({
-            name,
-            email,
-            password: hashedPassword
+        res.status(200).json({
+            success: true,
+            user
         });
-        const user = await newUser.save();
-        const token = createToken(user._id)
-        res.json({ success: true, token });
-
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
-    catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message })
-    }
-}
+};
 
-// Route for admin login
-const adminLogin = async (req, res) => {
+// Update User Profile
+exports.updateProfile = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-            const token = jwt.sign(email + password, process.env.JWT_SECRET);
-            res.json({ success: true, token });
-        }
-        else {
-            res.json({ success: false, message: "Invalid email or password" });
-        }
-    }
-    catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
-    }
-}
+        const { name, phone } = req.body;
 
-export { loginUser, registerUser, adminLogin };
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            { name, phone },
+            { new: true, runValidators: true }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: 'Profile updated successfully',
+            user
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// Update Avatar
+exports.updateAvatar = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+
+        // Delete old avatar
+        if (user.avatar?.public_id) {
+            await cloudinary.uploader.destroy(user.avatar.public_id);
+        }
+
+        // Upload new avatar
+        const result = await cloudinary.uploader.upload(req.file.path, {
+            folder: 'avatars',
+            width: 150,
+            crop: 'scale'
+        });
+
+        user.avatar = {
+            public_id: result.public_id,
+            url: result.secure_url
+        };
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Avatar updated successfully',
+            user
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// Add Address
+exports.addAddress = async (req, res) => {
+    try {
+        const address = await Address.create({
+            ...req.body,
+            user: req.user._id
+        });
+
+        await User.findByIdAndUpdate(req.user._id, {
+            $push: { addresses: address._id }
+        });
+
+        res.status(201).json({
+            success: true,
+            message: 'Address added successfully',
+            address
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// Update Address
+exports.updateAddress = async (req, res) => {
+    try {
+        const address = await Address.findOneAndUpdate(
+            { _id: req.params.id, user: req.user._id },
+            req.body,
+            { new: true, runValidators: true }
+        );
+
+        if (!address) {
+            return res.status(404).json({
+                success: false,
+                message: 'Address not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Address updated successfully',
+            address
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// Delete Address
+exports.deleteAddress = async (req, res) => {
+    try {
+        const address = await Address.findOneAndDelete({
+            _id: req.params.id,
+            user: req.user._id
+        });
+
+        if (!address) {
+            return res.status(404).json({
+                success: false,
+                message: 'Address not found'
+            });
+        }
+
+        await User.findByIdAndUpdate(req.user._id, {
+            $pull: { addresses: address._id }
+        });
+
+        res.status(200).json({
+            success: true,
+            message: 'Address deleted successfully'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// Get All Users (Admin)
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find().sort('-createdAt');
+
+        res.status(200).json({
+            success: true,
+            users
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};

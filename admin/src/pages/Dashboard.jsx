@@ -9,7 +9,6 @@ import "chart.js/auto";
 
 // Components
 import StatCard from '../components/common/StatCard';
-import SalesChart from '../components/dashboard/SalesChart';
 import RevenueChart from '../components/dashboard/RevenueChart';
 import OrderStats from '../components/dashboard/OrderStats';
 import TopProducts from '../components/dashboard/TopProducts';

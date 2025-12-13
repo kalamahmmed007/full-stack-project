@@ -26,3 +26,4 @@ const StatCard = ({ title, value, change, icon: Icon, color, trend }) => {
         </div>
     );
 };
+export default StatCard;
